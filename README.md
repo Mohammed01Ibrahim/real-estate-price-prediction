@@ -183,7 +183,7 @@ The CI matrix targets Windows/Linux and Python 3.12/3.14, with package consisten
 
 Raw/processed data, real listing text, contact information, point-level exploration JSON, model binaries, per-listing outputs, ZIPs, environments, IDE caches, and notebook checkpoints are ignored. Only code, reviewed aggregate results, and safe application screenshots are committed. The map API serves only price, area, property type, optional bedroom/bathroom counts, sanitized region/locality, and rounded coordinates; it exposes no source IDs, addresses, descriptions, sellers, emails, or phones. Keep the application local: rounded coordinates do not establish permission to publish records. Joblib artifacts execute Python content; load trusted, locally generated files and retrain after dependency changes.
 
-No project license is assigned automatically: confirm ownership/attribution before choosing one. A code license would not license the private dataset; no public dataset or model redistribution permission is asserted. Bundled libraries retain their own licenses. Git records actual changes without rewriting earlier history. No remote, push, public repository, or merge was created.
+MOIB's original project materials are subject to the [copyright and usage terms](COPYRIGHT.md). No permissive open-source license is granted for those materials. Bundled libraries retain their own licenses; no public dataset or model redistribution permission is asserted. Git records actual changes without rewriting earlier history. No remote, push, public repository, or merge was created.
 
 ## Limitations and future work
 
@@ -192,3 +192,11 @@ The source target/period and area-unit assumptions still need authoritative conf
 Useful next steps are confirming provenance/schema/rights, acquiring recent licensed data and real transaction targets, improving entity resolution, evaluating chronological and spatial splits, validating extreme records without silently clipping labels, testing uncertainty calibration, and comparing constrained boosting under a documented tuning budget.
 
 Stack: Python, pandas, NumPy, scikit-learn, Flask/Jinja, Leaflet, MarkerCluster, Plotly.js, joblib, Matplotlib, pytest, PowerShell, and GitHub Actions. The pipeline follows scikit-learn's [guidance on consistent preprocessing and leakage prevention](https://scikit-learn.org/stable/common_pitfalls.html).
+
+## Author
+
+**MOIB**
+
+© 2026 MOIB. All rights reserved unless otherwise stated.
+
+See [COPYRIGHT.md](COPYRIGHT.md) for ownership and usage terms.
