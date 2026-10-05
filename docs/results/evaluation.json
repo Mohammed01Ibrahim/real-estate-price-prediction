@@ -1,0 +1,264 @@
+{
+  "run_utc": "2026-10-05T06:07:10.274543+00:00",
+  "seed": 42,
+  "dataset_sha256": "43c0cdaa2212161a2e9b114e9c2970afe106f2157a025944f0b5b5ec7ff62884",
+  "data": {
+    "raw_rows": 106422,
+    "sequential_exclusions": {
+      "not_peru": 0,
+      "not_sale": 29531,
+      "not_usd": 8469,
+      "nonblank_payment_period": 29394,
+      "unsupported_property_type": 16728,
+      "missing_or_invalid_price": 0,
+      "missing_or_out_of_scope_total_area": 10407,
+      "duplicate_feature_price_observations": 864
+    },
+    "invalid_optional_cells_to_missing": {
+      "lat": 0,
+      "lon": 0,
+      "bedrooms": 0,
+      "bathrooms": 0
+    },
+    "coordinate_pairs_missing": 336,
+    "unused_source_fields": {
+      "rooms": {
+        "missing_rows": 11029,
+        "reason": "Not used by the supported predictor contract"
+      },
+      "surface_covered": {
+        "missing_rows": 11029,
+        "reason": "Not used by the supported predictor contract"
+      }
+    },
+    "retained_rows": 11029,
+    "unique_groups": 9930,
+    "price_min_usd": 5000.0,
+    "price_max_usd": 33218002.0,
+    "missing_features": {
+      "surface_total": 0,
+      "lat": 322,
+      "lon": 322,
+      "bedrooms": 204,
+      "bathrooms": 232,
+      "property_type": 0,
+      "l2": 0,
+      "l4": 1611
+    }
+  },
+  "scope": "Peru; Venta; USD; blank price_period; Casa/Departamento; total area 10-10000 m2",
+  "target": "Historical residential sale asking price in USD; blank period interpreted as total price",
+  "split": {
+    "method": "group-aware random 60/20/20; proxy groups from raw features with 0.01-degree coordinates",
+    "rows": {
+      "train": 6625,
+      "validation": 2209,
+      "test": 2195
+    },
+    "groups": {
+      "train": 5958,
+      "validation": 1986,
+      "test": 1986
+    }
+  },
+  "selection": "Lowest original-USD validation MAE; fixed candidates, no hyperparameter search",
+  "comparison": [
+    {
+      "model": "dummy",
+      "validation": {
+        "mae_usd": 181092.97917609778,
+        "rmse_usd": 372412.12812073005,
+        "r2": -0.06863370519773504
+      },
+      "cross_validation": {
+        "mae_usd": {
+          "folds": [
+            197171.11658382288,
+            196428.5923041686,
+            199483.5428443248
+          ],
+          "mean": 197694.41724410545,
+          "std": 1300.9133679814627
+        },
+        "rmse_usd": {
+          "folds": [
+            423537.6694563704,
+            423829.2320767529,
+            419962.4581596569
+          ],
+          "mean": 422443.11989759345,
+          "std": 1758.1266893955888
+        },
+        "r2": {
+          "folds": [
+            -0.07652894199985827,
+            -0.0845511749341219,
+            -0.08495039311388575
+          ],
+          "mean": -0.0820101700159553,
+          "std": 0.003879238689236053
+        }
+      }
+    },
+    {
+      "model": "ridge",
+      "validation": {
+        "mae_usd": 114004.51074123305,
+        "rmse_usd": 349134.99012676097,
+        "r2": 0.060778582264459646
+      },
+      "cross_validation": {
+        "mae_usd": {
+          "folds": [
+            134529.6755504724,
+            152219.0903591203,
+            121934.85670877004
+          ],
+          "mean": 136227.87420612093,
+          "std": 12421.664165287644
+        },
+        "rmse_usd": {
+          "folds": [
+            481248.55714393174,
+            919113.8030567389,
+            305311.06630020926
+          ],
+          "mean": 568557.8088336266,
+          "std": 258077.02853400478
+        },
+        "r2": {
+          "folds": [
+            -0.389890242057513,
+            -4.100430230778085,
+            0.42657841698061627
+          ],
+          "mean": -1.3545806852849938,
+          "std": 1.9700122779078209
+        }
+      }
+    },
+    {
+      "model": "hist_gradient_boosting",
+      "validation": {
+        "mae_usd": 73451.06209560066,
+        "rmse_usd": 182533.27992618128,
+        "r2": 0.743276661761848
+      },
+      "cross_validation": {
+        "mae_usd": {
+          "folds": [
+            78874.13861031823,
+            88511.83854631515,
+            84563.34494554512
+          ],
+          "mean": 83983.10736739285,
+          "std": 3955.908808302148
+        },
+        "rmse_usd": {
+          "folds": [
+            231068.4613643153,
+            240749.50637288138,
+            235315.8800646728
+          ],
+          "mean": 235711.28260062318,
+          "std": 3962.1471862739245
+        },
+        "r2": {
+          "folds": [
+            0.6795775255018531,
+            0.6500556022795203,
+            0.6593633166787236
+          ],
+          "mean": 0.6629988148200323,
+          "std": 0.012323382185583171
+        }
+      }
+    },
+    {
+      "model": "random_forest",
+      "validation": {
+        "mae_usd": 73225.84592826368,
+        "rmse_usd": 182942.78949415026,
+        "r2": 0.7421234628209624
+      },
+      "cross_validation": {
+        "mae_usd": {
+          "folds": [
+            79477.0387436816,
+            90979.23868345724,
+            83005.40409745178
+          ],
+          "mean": 84487.22717486352,
+          "std": 4811.236887967324
+        },
+        "rmse_usd": {
+          "folds": [
+            229592.66609760802,
+            242520.5332239802,
+            230602.3727400533
+          ],
+          "mean": 234238.52402054716,
+          "std": 5870.754307597476
+        },
+        "r2": {
+          "folds": [
+            0.6836574234899142,
+            0.6448880693579373,
+            0.672872927999169
+          ],
+          "mean": 0.6671394736156735,
+          "std": 0.01633850420180045
+        }
+      }
+    }
+  ],
+  "selected_model": "random_forest",
+  "held_out_test": {
+    "mae_usd": 90684.96676730091,
+    "rmse_usd": 728516.7176413309,
+    "r2": 0.1423245650270879
+  },
+  "permutation_importance_validation": {
+    "surface_total": {
+      "mean_mae_increase_usd": 134627.13452884884,
+      "std_mae_increase_usd": 1965.1592785670196
+    },
+    "lat": {
+      "mean_mae_increase_usd": 40102.592644965145,
+      "std_mae_increase_usd": 1484.2429405009527
+    },
+    "lon": {
+      "mean_mae_increase_usd": 25002.153415943907,
+      "std_mae_increase_usd": 1703.124554772934
+    },
+    "bedrooms": {
+      "mean_mae_increase_usd": 2211.8239417336395,
+      "std_mae_increase_usd": 277.5536623854748
+    },
+    "bathrooms": {
+      "mean_mae_increase_usd": 7285.814377731939,
+      "std_mae_increase_usd": 733.4571314756251
+    },
+    "property_type": {
+      "mean_mae_increase_usd": 1595.3266025332657,
+      "std_mae_increase_usd": 364.11528080422244
+    },
+    "l2": {
+      "mean_mae_increase_usd": 1363.7964783336163,
+      "std_mae_increase_usd": 595.2391318861131
+    },
+    "l4": {
+      "mean_mae_increase_usd": 4601.849636315732,
+      "std_mae_increase_usd": 813.3845502700647
+    }
+  },
+  "versions": {
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "scikit-learn": "1.9.1",
+    "Flask": "3.1.3",
+    "joblib": "1.6.0",
+    "matplotlib": "3.11.2"
+  },
+  "artifact_bytes": 4887387
+}
