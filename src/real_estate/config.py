@@ -6,6 +6,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DATA_PATH = PROJECT_ROOT / "data" / "raw" / "pe_properties_crude.csv"
 MODEL_PATH = PROJECT_ROOT / "models" / "pipeline.joblib"
 ARTIFACTS_PATH = PROJECT_ROOT / "artifacts"
+EXPLORER_PATH = PROJECT_ROOT / "data" / "processed" / "explorer.json"
 SEED = 42
 PROPERTY_TYPES = ("Casa", "Departamento")
 FEATURE_COLUMNS = (

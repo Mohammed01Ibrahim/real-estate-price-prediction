@@ -10,7 +10,10 @@ from flask import Flask, Response, jsonify, render_template, request
 from flask.typing import ResponseReturnValue
 from werkzeug.exceptions import BadRequest, RequestEntityTooLarge, UnsupportedMediaType
 
-from .config import FEATURE_COLUMNS, MODEL_PATH, NUMERIC_BOUNDS, PROPERTY_TYPES
+from .config import EXPLORER_PATH, FEATURE_COLUMNS, MODEL_PATH, NUMERIC_BOUNDS, PROPERTY_TYPES
+from .analytics import filter_options
+from .explorer import ExplorerStore, MissingExplorerData
+from .filters import FilterValidationError, parse_filters
 from .predict import ModelUnavailable, Predictor
 from .validation import InputValidationError
 
@@ -23,7 +26,7 @@ MODEL_UNAVAILABLE_MESSAGE = (
 UNEXPECTED_ERROR_MESSAGE = "The prediction could not be completed. Please try again."
 
 
-def create_app(model_path: str | Path | None = None) -> Flask:
+def create_app(model_path: str | Path | None = None, explorer_path: str | Path | None = None) -> Flask:
     """Create an app that remains usable before its local model is trained.
 
     Predictor owns validation and preprocessing. No fitted transformations or
@@ -36,6 +39,7 @@ def create_app(model_path: str | Path | None = None) -> Flask:
     )
     app.json.sort_keys = False
     app.extensions["real_estate_predictor"] = None
+    app.extensions["real_estate_explorer"] = ExplorerStore(explorer_path if explorer_path is not None else EXPLORER_PATH)
     predictor_lock = Lock()
 
     def get_predictor() -> Predictor:
@@ -63,6 +67,7 @@ def create_app(model_path: str | Path | None = None) -> Flask:
                 numeric_bounds=NUMERIC_BOUNDS,
                 prediction=(f"{prediction:,.0f}" if prediction is not None else None),
                 error=error,
+                active_page="estimate",
             ),
             status,
         )
@@ -76,6 +81,51 @@ def create_app(model_path: str | Path | None = None) -> Flask:
     @app.get("/")
     def index() -> ResponseReturnValue:
         return page()
+
+    @app.get("/explore")
+    def explore_page() -> ResponseReturnValue:
+        return render_template("explore.html", active_page="explore")
+
+    @app.get("/insights")
+    def insights_page() -> ResponseReturnValue:
+        return render_template("insights.html", active_page="insights")
+
+    def exploration_response(kind: str) -> ResponseReturnValue:
+        try:
+            if any(len(request.args.getlist(name)) != 1 for name in request.args):
+                raise FilterValidationError("Provide each filter parameter only once.")
+            filters = parse_filters(request.args)
+            return jsonify(app.extensions["real_estate_explorer"].response(kind, filters))
+        except FilterValidationError as exc:
+            return jsonify(error=str(exc)), 400
+        except MissingExplorerData as exc:
+            return jsonify(error=str(exc)), 503
+        except Exception:
+            app.logger.exception("Unexpected exploration failure.")
+            return jsonify(error="Exploration could not be completed. Please try again."), 500
+
+    @app.get("/api/listings")
+    def listing_data() -> ResponseReturnValue:
+        return exploration_response("listings")
+
+    @app.get("/api/insights")
+    def insight_data() -> ResponseReturnValue:
+        return exploration_response("insights")
+
+    @app.get("/api/options")
+    def exploration_options() -> ResponseReturnValue:
+        try:
+            if set(request.args) - {"l2"} or any(len(request.args.getlist(name)) != 1 for name in request.args):
+                raise FilterValidationError("Only a single region filter is supported for options.")
+            filters = parse_filters(request.args)
+            return jsonify(filter_options(app.extensions["real_estate_explorer"].get(), filters.l2))
+        except FilterValidationError as exc:
+            return jsonify(error=str(exc)), 400
+        except MissingExplorerData as exc:
+            return jsonify(error=str(exc)), 503
+        except Exception:
+            app.logger.exception("Unexpected exploration options failure.")
+            return jsonify(error="Location options are unavailable."), 500
 
     @app.post("/")
     def predict_form() -> ResponseReturnValue:
