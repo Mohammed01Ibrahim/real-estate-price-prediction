@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Peru residential price explorer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <main class="layout">
+      <header class="hero">
+        <p class="eyebrow">REAL ESTATE · MACHINE LEARNING PORTFOLIO</p>
+        <h1>Peru residential<br>price explorer</h1>
+        <p class="intro">Explore a historical estimate of a residential property's sale asking price in US dollars.</p>
+        <div class="scope"><span>Peru</span><span>Houses &amp; apartments</span><span>2019–2020 listings</span></div>
+      </header>
+
+      <section class="workspace" aria-label="Price prediction">
+        <div class="form-panel">
+          <div class="panel-heading">
+            <h2>Property details</h2>
+            <p>Required fields are marked *. Leave unknown optional details blank.</p>
+          </div>
+
+          {% if error %}
+          <div class="error" role="alert">
+            <strong>Unable to estimate this property</strong>
+            <p>{{ error }}</p>
+          </div>
+          {% endif %}
+
+          <form action="{{ url_for('predict_form') }}" method="post">
+            <div class="field-grid">
+              <div class="field">
+                <label for="property_type">Property type *</label>
+                <select name="property_type" id="property_type" required>
+                  <option value="" {% if not values.get('property_type') %}selected{% endif %}>Select a property type</option>
+                  {% for property_type in property_types %}
+                  <option value="{{ property_type }}" {% if values.get('property_type') == property_type %}selected{% endif %}>{{ property_type }} — {{ 'House' if property_type == 'Casa' else 'Apartment' }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="field">
+                <label for="surface_total">Total area (m²) *</label>
+                <input id="surface_total" name="surface_total" type="number" min="{{ numeric_bounds['surface_total'][0] }}" max="{{ numeric_bounds['surface_total'][1] }}" step="any" required value="{{ values.get('surface_total', '') }}" placeholder="e.g. 120">
+              </div>
+              <div class="field">
+                <label for="bedrooms">Bedrooms</label>
+                <input id="bedrooms" name="bedrooms" type="number" min="{{ numeric_bounds['bedrooms'][0] }}" max="{{ numeric_bounds['bedrooms'][1] }}" step="1" value="{{ values.get('bedrooms', '') }}" placeholder="e.g. 3">
+              </div>
+              <div class="field">
+                <label for="bathrooms">Bathrooms</label>
+                <input id="bathrooms" name="bathrooms" type="number" min="{{ numeric_bounds['bathrooms'][0] }}" max="{{ numeric_bounds['bathrooms'][1] }}" step="1" value="{{ values.get('bathrooms', '') }}" placeholder="e.g. 2">
+              </div>
+            </div>
+
+            <fieldset>
+              <legend>Location <span>optional</span></legend>
+              <p class="fieldset-help">Use the dataset's Spanish region and locality names where known. Unseen names are accepted, but have no learned category effect.</p>
+              <div class="field-grid">
+                <div class="field">
+                  <label for="l2">Region (l2)</label>
+                  <input id="l2" name="l2" type="text" maxlength="100" value="{{ values.get('l2', '') }}" placeholder="e.g. Lima">
+                </div>
+                <div class="field">
+                  <label for="l4">Locality (l4)</label>
+                  <input id="l4" name="l4" type="text" maxlength="100" value="{{ values.get('l4', '') }}" placeholder="e.g. Miraflores">
+                </div>
+                <div class="field">
+                  <label for="lat">Latitude</label>
+                  <input id="lat" name="lat" type="number" min="{{ numeric_bounds['lat'][0] }}" max="{{ numeric_bounds['lat'][1] }}" step="any" value="{{ values.get('lat', '') }}" placeholder="e.g. -12.12" aria-describedby="coordinates-help">
+                </div>
+                <div class="field">
+                  <label for="lon">Longitude</label>
+                  <input id="lon" name="lon" type="number" min="{{ numeric_bounds['lon'][0] }}" max="{{ numeric_bounds['lon'][1] }}" step="any" value="{{ values.get('lon', '') }}" placeholder="e.g. -77.03" aria-describedby="coordinates-help">
+                </div>
+              </div>
+              <p class="fieldset-help" id="coordinates-help">Provide both coordinates or leave both blank. Coordinates must fall within the configured Peru bounds.</p>
+            </fieldset>
+
+            <button type="submit">Estimate historical asking price <span aria-hidden="true">→</span></button>
+          </form>
+        </div>
+
+        <aside class="result-panel" aria-label="Estimate and limitations">
+          {% if prediction is not none %}
+          <section class="estimate" aria-live="polite">
+            <p class="eyebrow">ESTIMATED ASKING PRICE</p>
+            <p class="amount"><span>USD</span> {{ prediction }}</p>
+            <p>One point estimate from the fitted historical model.</p>
+          </section>
+          {% else %}
+          <section class="estimate empty">
+            <div class="result-mark" aria-hidden="true">⌂</div>
+            <h2>Your estimate appears here</h2>
+            <p>Enter the details you know. The fitted model handles missing optional values.</p>
+          </section>
+          {% endif %}
+
+          <section class="limitations">
+            <h2>Read this estimate in context</h2>
+            <p>The model learns from historical <strong>2019–2020 Peru sale listings</strong> for <em>Casa</em> (house) and <em>Departamento</em> (apartment), priced in USD.</p>
+            <p>These are advertised asking prices, not completed sale transaction values. The estimate is not adjusted for today's market.</p>
+            <p>No uncertainty interval or calibration guarantee is available. Missing details and unfamiliar locations can reduce reliability.</p>
+            <p>Room count and covered area are absent from the retained training data, so this model does not use them.</p>
+            <p class="assumption">Sale listings with a blank price period are included under the documented assumption that they represent a one-time asking price.</p>
+          </section>
+        </aside>
+      </section>
+      <footer>A local portfolio demonstration · See the repository README for methodology, evaluation, and data limitations.</footer>
+    </main>
+  </body>
+</html>
