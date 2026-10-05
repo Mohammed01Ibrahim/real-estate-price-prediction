@@ -6,6 +6,9 @@ build-backend = "setuptools.build_meta"
 name = "real-estate-price-prediction"
 version = "0.1.0"
 description = "Reproducible Peru residential USD asking-price regression with a shared Flask inference pipeline"
+authors = [
+  { name = "MOIB" }
+]
 requires-python = ">=3.12,<3.15"
 dependencies = [
   "numpy>=2.2,<3", "pandas>=2.2,<4", "scikit-learn>=1.7,<2",
