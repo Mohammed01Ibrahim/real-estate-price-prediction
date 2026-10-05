@@ -1,6 +1,6 @@
 # Local data only
 
-Expected file: `data/raw/pe_properties_crude.csv` (UTF-8 CSV). The local deliverable already contains the single raw copy extracted without modifying either original archive. It is ignored by Git. A fresh clone requires you to obtain authorized access to the original data; no public download or redistribution license was confirmed.
+Expected file: `data/raw/pe_properties_crude.csv` (UTF-8 CSV). The private development environment used a single verified raw copy extracted without modifying either original archive. The public repository excludes it. A fresh clone requires authorized data access; no public download or redistribution license was confirmed.
 
 You may restore the CSV from either historical ZIP with:
 
@@ -17,4 +17,6 @@ Required columns: `id, operation_type, currency, price_period, l1, price, surfac
 
 Publication review found 85 rows with email-like text, 13,337 rows with phone-like text patterns (heuristic, not confirmed phone numbers), and 101,026 coordinate pairs. Names and addresses may also occur in free text; absence of these has not been established. No raw or processed records, private text, precise coordinates, or source notebook outputs are included in the public Git tree. No real sample is published; tests use generated synthetic fixtures.
 
-Code reproducibility does not grant data redistribution rights. Review any future dataset or artifact release separately.
+`python -m real_estate.prepare_explorer` creates ignored `data/processed/explorer.json` using the same deterministic residential scope and deduplication rules as training. It keeps only validated price/area/type/counts, sanitized region/locality, and coordinates rounded to two decimals. It includes verified held-out predictions only when the source, fitted model, evaluation report, and prediction file agree. Missing coordinates remain in aggregate analytics but are omitted from map points. See [exploration architecture](../docs/exploration.md).
+
+Code reproducibility does not grant data redistribution rights. Keep point-level exploration data local and review any future release separately.

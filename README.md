@@ -1,8 +1,24 @@
-# Peru Residential Asking Price Estimation
+# Peru Residential Price Explorer
 
-A reproducible Python ML portfolio project that estimates historical residential sale asking prices in USD. One fitted scikit-learn estimator serves both evaluation and a small Flask application, with explicit target semantics, group-aware evaluation, and synthetic tests that run without private data.
+A reproducible data science application for historical residential sale asking prices in Peru. Estimate a price with a fitted scikit-learn pipeline, explore listings on a clustered interactive map, and examine distributions, regional comparisons, and model diagnostics in an interactive dashboard.
 
-This Phase 2 repository consolidates two historical versions of the same project. It demonstrates data validation, reusable feature engineering, leakage prevention, model comparison, artifact management, testing, and application integration. It is a local research demonstration, not a production valuation service.
+The project combines data validation, reusable preprocessing, group-aware evaluation, Flask backend engineering, Leaflet mapping, Plotly analytics, and automated tests. Its historical asking-price estimates are a research demonstration; held-out performance does not support reliable current-market valuation.
+
+## Application
+
+**Estimate Price | Explore Map | Data Insights** share navigation, typography, and a consistent residential sale scope.
+
+- **Estimate Price** (`/`): validated property inputs, USD estimates from the exact fitted pipeline, and understandable missing-model errors.
+- **Explore Map** (`/explore`): a full-size Leaflet map with clustered points, hover previews, selected-property details, pan/zoom, and shared property/location/price/area/count filters.
+- **Data Insights** (`/insights`): dynamic summaries and interactive distributions, property-type counts, regional counts and medians, price–area scatter, numeric correlations, and verified model diagnostics.
+
+![Interactive listing map with generated fictional properties](docs/images/map.jpg)
+
+The map screenshot uses generated fictional properties with explicitly named demo localities. No real listing records are published. Map points in the local application use authorized data and coordinates rounded to two decimals.
+
+![Dashboard overview with current aggregate statistics](docs/images/insights.jpg)
+
+Leaflet and marker clustering handle the dense geographic distribution without a paid API key. Plotly provides responsive axes, hover, zoom, and linear/log views. JavaScript libraries are pinned and served locally with their licenses; only OpenStreetMap basemap tiles require internet access. See [exploration architecture and API](docs/exploration.md).
 
 ## Problem and scope
 
@@ -65,11 +81,7 @@ The weak held-out R² and large RMSE matter: retained asking prices span $5,000�
 
 ![Held-out prediction density](docs/results/prediction_vs_actual.png)
 
-![Held-out residual analysis](docs/results/residual_analysis.png)
-
-![Validation permutation importance](docs/results/permutation_importance.png)
-
-Permutation importance measures the increase in validation MAE after shuffling a raw input, with three repeats. Correlated geographic inputs can redistribute importance, and the result is not causal. The published plots are aggregate views; listing-level predictions stay private.
+Residual analysis and validation permutation importance are interactive on the dashboard, with [aggregate figures](docs/results/) also available. Importance measures the increase in validation MAE after shuffling a raw input, with three repeats, on the selected pipeline before the development refit. It is clearly distinguished from final held-out diagnostics. Correlated inputs can redistribute importance, and the result is not causal. Listing-level predictions remain private.
 
 ## Repository
 
@@ -84,12 +96,16 @@ real-estate-price-prediction/
 │   ├── evaluate.py           # original-USD metrics and aggregate figures
 │   ├── predict.py            # artifact contract and validated inference
 │   ├── validation.py         # shared public input validation
-│   ├── web.py                # Flask factory and local entry point
-│   ├── templates/index.html
-│   └── static/style.css
+│   ├── explorer.py           # allowlisted local artifact and verified evaluation
+│   ├── prepare_explorer.py   # reproducible exploration export CLI
+│   ├── filters.py            # authoritative shared filter validation
+│   ├── analytics.py          # summaries, distributions, correlations, pagination
+│   ├── web.py                # Flask pages, JSON APIs, and local entry point
+│   ├── templates/            # shared shell, estimator, map, insights
+│   └── static/               # styles, interaction code, pinned vendor assets
 ├── tests/                    # synthetic data, no source dataset dependency
 ├── notebooks/exploratory_analysis.ipynb
-├── scripts/prepare_data.py
+├── scripts/                 # authorized extraction and vendor verification
 ├── data/README.md            # ignored raw CSV lives under data/raw/
 ├── models/README.md          # ignored local pipeline.joblib
 ├── artifacts/README.md       # ignored local generated experiment output
@@ -101,7 +117,7 @@ real-estate-price-prediction/
 └── .gitignore
 ```
 
-Historical notebooks, old processed CSVs, Tableau files, and the old Flask/model remain preserved in the original ZIPs outside this repository. The manifest distinguishes that history from this newly implemented Phase 2 code. No legacy file controls training or inference. The output-free exploratory notebook uses the reusable modules and training partition; it is optional and not a second training implementation.
+Historical notebooks, old processed CSVs, Tableau files, and the old Flask/model remain preserved in the original ZIPs outside this repository. The baseline manifest records their provenance. Their useful analytical questions informed the current dashboard, but charts are regenerated from the corrected scope. Mixed rental/sale targets, excluded property types, missing covered-area/room features, legacy category codes, geographic clusters, listing-duration features, old residuals, and obsolete model scores are excluded. The output-free exploratory notebook uses reusable modules and the training partition.
 
 ## Windows / VS Code setup
 
@@ -118,7 +134,7 @@ python -m pip check
 
 `requirements.txt` installs the package in editable mode and pins runtime/test dependencies with `constraints.txt`. Select `.venv\Scripts\python.exe` as the VS Code interpreter. If PowerShell blocks activation, use `.\.venv\Scripts\python.exe` instead of `python` for each command below; activation is a convenience, and no execution-policy change is required.
 
-The local deliverable already includes the ignored raw CSV and final model. For a fresh Git clone, restore authorized raw data from either original archive:
+The verified private development environment contains the raw CSV, fitted pipeline, and generated exploration artifact. **The public repository and source export exclude all three.** A fresh clone requires authorized data access and local regeneration. Restore the known raw data from either original archive:
 
 ```powershell
 python scripts/prepare_data.py --archive "C:\path\to\DS-PRO Code.zip"
@@ -126,10 +142,11 @@ python scripts/prepare_data.py --archive "C:\path\to\DS-PRO Code.zip"
 
 Use your archive path in that command; source files need no path edits. The script verifies the dataset hash, extracts only the known CSV, and refuses to overwrite different data. If your dataset is another authorized file matching the schema, train with `--data "C:\path\to\your.csv"` instead; its resulting metrics may differ.
 
-Train or rebuild the complete model and local evaluation outputs:
+Train the complete model and local evaluation outputs, then prepare map/dashboard data:
 
 ```powershell
 python -m real_estate.train
+python -m real_estate.prepare_explorer
 # Optional explicit paths; defaults already resolve against this repository:
 # python -m real_estate.train --data "C:\path\to\your.csv" --model models/pipeline.joblib
 ```
@@ -143,7 +160,7 @@ python -m real_estate.web
 
 Open [the local application](http://127.0.0.1:5000). The server binds to localhost with debug and the reloader disabled. Stop it with Ctrl+C. If port 5000 is occupied, use `python -m flask --app real_estate.web:create_app run --host 127.0.0.1 --port 5001 --no-debugger --no-reload`.
 
-No `.env`, secret, external API, historical model, dataset-driven dropdown, or manually rebuilt encoder is required. Once installed in editable mode, the module commands work from another working directory too. A missing/incompatible model produces a safe 503 and training instructions; restart after replacing a model already cached by the running app.
+No `.env`, paid API key, historical model, or manually rebuilt encoder is required. Module commands resolve default paths against the repository. Location filter options come only from the prepared allowlisted artifact. A missing/incompatible model produces a safe 503 and training instructions; restart after replacing a model already cached by the running app. Missing exploration data displays setup guidance on both exploration pages, with the preparation command also shown on the map. You can generate exploration data before training; unavailable model diagnostics remain clearly marked.
 
 Example API request with invented property details:
 
@@ -154,19 +171,19 @@ Invoke-RestMethod -Uri http://127.0.0.1:5000/api/predict -Method Post -ContentTy
 
 `GET /health` returns 200 when the fitted artifact loads; missing, corrupt, unfitted, or incompatible artifacts return 503. Predictions return `prediction_usd`, `currency`, and `target`; bad input returns 400, oversized bodies 413, and unexpected application failures a safe 500.
 
-## Demo and verification
+## Verification
 
-![Live Flask form using invented details and no coordinates](docs/results/app_demo.jpg)
+Tests use synthetic fixtures and run without private data or a pretrained model. They cover the preserved pipeline and estimator, shared filter validation, artifact allowlists and caching, pagination, dynamic summaries, full-tail histograms, pairwise correlations, bounded scatter sampling, evaluation provenance, and safe missing/corrupt-file behavior. Browser verification covers navigation, prediction, map tooltips/details, filtering/reset, interactive charts, and empty selections. See [verification and publication review](docs/verification.md) for final test counts and clean-install evidence.
 
-The screenshot is from the actual local application and an invented property, not a real listing. A live HTTP smoke test made three valid prediction requests and five invalid requests; HTML, CSS, and health endpoints returned 200. Synthetic tests additionally verify missing/corrupt/unfitted models, serialization, unseen categories, nullable inputs, geographic math, train/fold isolation, target filtering, group separation, input escaping, malformed JSON, body limits, and safe errors.
+**205 tests passed in both the working project and a clean public export**, including all 112 existing tests and 93 new regressions. The clean export installed exact dependencies into a separate empty environment, verified all bundled browser assets, and passed safe missing-data/model route checks without private files.
 
-**112 automated tests passed in both the working project and a clean public export.** The export installed the final exact dependencies in a separate empty environment without the private data/model, imported its own source, and passed all tests plus the missing-model health check. Full real-data training and model loading ran successfully in the working project. Compilation and `pip check` passed. See [verification and publication review](docs/verification.md). The CI matrix is configured for Windows/Linux and Python 3.12/3.14, using synthetic fixtures; remote CI has not been run because nothing was pushed.
+The CI matrix targets Windows/Linux and Python 3.12/3.14, with package consistency, compilation, offline vendor checks, and synthetic tests. Remote CI has not run because nothing has been pushed.
 
 ## Data, artifacts, and publication
 
-Raw/processed data, real listing text, contact information, precise locations, model binaries, per-listing outputs, ZIPs, environments, IDE caches, and notebook checkpoints are ignored. Only aggregate reviewed results and a synthetic demo screenshot are committed. Joblib artifacts execute Python content: load only trusted, locally generated files and retrain after dependency changes. No public dataset license or model redistribution permission is asserted.
+Raw/processed data, real listing text, contact information, point-level exploration JSON, model binaries, per-listing outputs, ZIPs, environments, IDE caches, and notebook checkpoints are ignored. Only code, reviewed aggregate results, and safe application screenshots are committed. The map API serves only price, area, property type, optional bedroom/bathroom counts, sanitized region/locality, and rounded coordinates; it exposes no source IDs, addresses, descriptions, sellers, emails, or phones. Keep the application local: rounded coordinates do not establish permission to publish records. Joblib artifacts execute Python content; load trusted, locally generated files and retrain after dependency changes.
 
-No license is assigned automatically: choose a code license only after confirming ownership/attribution of the original project. A code license would not license the private dataset. Git contains real commits for this Phase 2 work; no historical development is fabricated. No remote, push, public repository, or merge was created.
+No project license is assigned automatically: confirm ownership/attribution before choosing one. A code license would not license the private dataset; no public dataset or model redistribution permission is asserted. Bundled libraries retain their own licenses. Git records actual changes without rewriting earlier history. No remote, push, public repository, or merge was created.
 
 ## Limitations and future work
 
@@ -174,4 +191,4 @@ The source target/period and area-unit assumptions still need authoritative conf
 
 Useful next steps are confirming provenance/schema/rights, acquiring recent licensed data and real transaction targets, improving entity resolution, evaluating chronological and spatial splits, validating extreme records without silently clipping labels, testing uncertainty calibration, and comparing constrained boosting under a documented tuning budget.
 
-Stack: Python, pandas, NumPy, scikit-learn, Flask/Jinja, joblib, Matplotlib, pytest, PowerShell, and GitHub Actions. The pipeline follows scikit-learn's [guidance on consistent preprocessing and leakage prevention](https://scikit-learn.org/stable/common_pitfalls.html).
+Stack: Python, pandas, NumPy, scikit-learn, Flask/Jinja, Leaflet, MarkerCluster, Plotly.js, joblib, Matplotlib, pytest, PowerShell, and GitHub Actions. The pipeline follows scikit-learn's [guidance on consistent preprocessing and leakage prevention](https://scikit-learn.org/stable/common_pitfalls.html).

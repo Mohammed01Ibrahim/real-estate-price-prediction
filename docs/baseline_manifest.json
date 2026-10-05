@@ -1,5 +1,5 @@
 {
-  "phase": "Phase 2 baseline; originals remain outside the new repository",
+  "baseline_context": "Historical source archives; originals remain outside the repository",
   "archives": [
     {
       "filename": "DS-PRO Code.zip",

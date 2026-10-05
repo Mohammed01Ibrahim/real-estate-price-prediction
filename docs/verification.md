@@ -1,31 +1,43 @@
 # Verification and publication review
 
-Performed locally on Windows, Python 3.14.7, 2026-10-05. Nothing was pushed or published.
+Verified locally on Windows with Python 3.14.7, 2026-10-05. The application retains the existing fitted pipeline and verified experiment; exploration work did not retrain or change it. Nothing was pushed or published.
+
+## Preserved model evidence
+
+The recorded training run completed four fixed candidates, three training-only group CV folds, validation selection, development refit, serialization, reload, and evaluation on 2,195 held-out rows. Training and validation contain 6,625 and 2,209 rows. The selected Random Forest pipeline remains 4,887,387 bytes. Held-out MAE is $90,684.97, RMSE $728,516.72, and R² 0.1423. These limitations remain visible in the README and dashboard.
+
+Explorer preparation independently verified the source hash, saved model/run metadata, every split's row/group counts, final predictions from the loaded pipeline, and metrics recalculated from those arrays. Saved validation-stage permutation scores are distinguished from final held-out results. No legacy notebook score, residual plot, or impurity-importance image was reused.
+
+## Application and data checks
 
 | Check | Evidence / outcome |
 |---|---|
-| Environment | Created a new empty `.venv`; installed the declared requirements; recorded exact direct/transitive runtime/test pins; reinstalled to validate direct pins. `pip check` passed. |
-| Clean public export | Exported only committed files to a disposable directory; created a separate empty environment; installed the final exact requirements; verified imports resolved to the exported source. `pip check` and **112 tests** passed (6.89 seconds). Missing private artifact correctly returned health HTTP 503. No raw data, original archive, or model was in this export. |
-| Core checks | `python -m compileall -q src scripts` and `git diff --check` passed. |
-| Automated behavior tests | `python -m pytest`: **112 passed**, working repository run 2.84 seconds and separate clean-export run 6.89 seconds. Synthetic fixtures need neither raw dataset nor pretrained model. |
-| Full real-data training | All four candidates completed three training-only CV folds and validation scoring on the final supported scope. Selected Random Forest was refitted on development data, serialized, reloaded, and evaluated on 2,195 test rows. |
-| Artifact | Compressed complete pipeline: 4,887,387 bytes. Serialization/inference equality tested. Missing, corrupt, unfitted, and schema/library-incompatible artifacts fail safely. |
-| Final consistency | After the repeated-ID guard was added, final partitions and stored model metrics were recomputed and matched the recorded results without refitting. Supplied source IDs are unique. |
-| Flask startup | `python -m real_estate.web` started on 127.0.0.1:5000 with debug/reloader disabled. HTML, CSS, and health returned HTTP 200. |
-| Live API | Three invented properties produced finite positive estimates ($165,546.51, $227,259.16, $105,367.76). Five invalid requests returned 400: negative area, unsupported type, incomplete coordinate pair, boolean count, obsolete room field. |
-| Additional app behavior | Tests exercise forms, malformed/non-object JSON, body size limits, input escaping, missing model 503, and safe unexpected-error responses. |
-| Browser | Actual form submitted with invented details and omitted coordinates, producing $165,547 when rounded for display. Saved screenshot is public and contains no real listing. |
-| Data preparation | Script extracted and SHA-256-verified the CSV from the original ZIP to a disposable temporary directory. Existing correct file is left alone; different existing content is refused. |
-| Portability | Default model prediction and training CLI import/help succeeded from the parent working directory. Tests also change working directory. No original notebook/artifact/dataset-driven app dropdown is required. |
-| Notebook | Generated clean optional EDA notebook; JSON/schema inspected, outputs cleared. Notebook was not executed interactively. |
-| CI | Configured Windows/Linux, Python 3.12/3.14, dependency installation, package consistency, compilation, and synthetic tests. Remote matrix not executed because nothing was pushed. |
+| Preserved tests | All 112 earlier tests remain; no pipeline/inference tests were removed. |
+| New tests | 93 exploration/analytics regressions cover filters, privacy allowlists, sanitized labels, paired rounded coordinates, pagination, artifact caching/reload, missing/corrupt files, full-tail histograms, medians/counts, pairwise correlations, sample bounds/extrema, and mismatched evaluation metadata/predictions. |
+| Complete suite | **205 tests passed** in the working repository (7.31 seconds). Fixtures require neither real data nor a pretrained model. |
+| Clean public export | Exported committed application/test code (`000488b`) into a disposable directory, created an independent empty Python 3.14.7 environment, and installed exact requirements. Its own source imported correctly; `pip check`, compilation, 14 vendor hashes, and **205 tests passed** (7.67 seconds). Private CSV, model, explorer JSON, test predictions, and original archives were absent. Three pages and all 20 vendor/app assets returned 200; missing-data/model APIs returned safe 503 and debug was disabled. Subsequent edits concern documentation/screenshots only. |
+| Prepared scope | 11,029 retained listings, 23 reported regions, median price $198,000, median area 140 m², 3,777 Casa and 7,252 Departamento. All six values independently matched existing `prepare_data` output. |
+| Map completeness | 10,707 mappable coordinate pairs and 322 missing-coordinate listings. Browser loaded all six API pages and reported the complete map population. Missing coordinates never become fabricated locations. |
+| Model consistency | Explorer export rechecked predictions from the exact saved pipeline and included verified evaluation. Model size and held-out metrics stayed unchanged. |
+| Missing-data browser | Both exploration pages displayed safe setup guidance with missing private artifacts; chart/summary values cleared instead of displaying stale results. The map showed the preparation command. |
+| Flask startup | `python -m real_estate.web` runs on 127.0.0.1:5000 with debugger/reloader disabled. All three pages and local CSS/JavaScript assets load. |
+| Estimator browser | Invented Departamento, 120 m², 3 bedrooms, 2 bathrooms, Lima, unseen demo locality, no coordinates: form displayed USD 165,547, matching the preserved pipeline's earlier result. |
+| Map browser | Hover showed price/type/area/counts/location; click populated richer details with approximate coordinate labels and Unknown missing values. Casa + Lima matched 2,447 listings / 2,367 mapped points. Empty search cleared points; reset restored all results. Cluster clicks zoomed into points. No JavaScript warnings/errors observed. |
+| Insights browser | Eleven interactive plots rendered. Hover labels, log views, Casa filtering, empty/reset recovery, invalid filter states, and fixed global test diagnostics checked. Casa filtering produced 3,777 listings, median $287,000 and 240 m²; model scores stayed fixed. Undefined correlations remain blank with paired-count context. |
+| Responsive layout | Insights checked at 390 × 844: no horizontal page overflow, charts stayed within cards, summaries used two columns and evaluation cards one column. Map interaction verified at ordinary desktop width. |
+| Core/package checks | `pip check`, `compileall`, and `git diff --check` passed. Fourteen pinned vendor downloads passed offline SHA-256/size verification. Git attributes preserve exact vendor bytes across Windows checkouts. |
+| Publication scan | Scanned the candidate Git tree for credential/token/private-key patterns, user-specific Windows paths, debug enabled, private data/model/archive/environment files, oversized artifacts, and notebook outputs. No actual secret, private listing text, personal path, or output-bearing notebook found. The largest file is licensed Plotly.js, 4,763,993 bytes. Dataset contact fields are excluded; vendor author/license contacts are legitimate third-party notices. |
+| Notebook | Optional notebook remains output-free; professional text and cell IDs replaced internal workflow terms. It was not executed interactively. |
+| CI | Windows/Linux × Python 3.12/3.14 matrix includes dependency installation, package consistency, compilation, offline vendor verification, and synthetic tests. Remote CI has not run because nothing was pushed. |
 
-Windows virtual-environment creation, dependency installation, training, tests, and app startup were executed. Activation is optional; all verification used the explicit `.venv\Scripts\python.exe` executable, so it does not depend on the user's PowerShell execution policy. Other Python/OS combinations are CI targets, not locally verified claims.
+The earlier verified archive extractor remains unchanged: it extracts only the expected CSV, checks SHA-256, preserves existing matching content, and refuses different content. Default paths remain portable. Activation is optional; verification uses the explicit virtual-environment executable without requiring an execution-policy change.
 
-The public candidate tree was scanned for common credential/token/private-key patterns, user-specific absolute paths, debug enabled, binary datasets/models, large files, and notebook outputs. No actual credential, personal path, enabled debugger, model binary, private dataset, or output-bearing notebook was found. This is a scoped publication review, not a proof that every conceivable secret pattern is absent.
+## Public contents
 
-`git check-ignore` confirmed raw CSV, final fitted model, individual test predictions, and environment metadata are excluded. Raw free text has email-like and phone-like content and source coordinates; all source/processed records and old notebook outputs remain private. Only aggregate experiment figures/summary and an invented-property screenshot are tracked. The raw collection license and source attribution remain unconfirmed; no data or model redistribution rights are asserted.
+Raw CSVs, processed point-level JSON, fitted models, individual test predictions, original ZIPs, environments, caches, and temporary verification/demo files remain ignored. Public map screenshots use generated fictional properties with demo locality labels. The dashboard screenshot contains aggregate summaries/distributions; the estimator screenshot uses invented input. Reviewed aggregate evaluation figures and summary remain under `docs/results/`.
 
-The original archives remain outside the newly initialized repository. No unrelated repository was modified. Git history records Phase 2 work as it happened; no remote was configured. No LICENSE was fabricated. The owner may choose a code license after checking original ownership/attribution; this would not license the dataset.
+Source schema details, attribution, and redistribution rights remain **Not confirmed from the provided source code/data.** Coordinate rounding reduces precision but does not anonymize listings or grant publication rights. The documented app binds to localhost; publishing its code does not authorize deployment of private data endpoints.
 
-The repository is ready for **code-only portfolio publication**, with the README assumptions and performance limitations retained. There are no remaining implementation blockers for the documented local workflow. Data/model publication requires a separate rights/privacy review. Current-market valuation, source-schema confirmation, future-time/spatial performance, and calibrated uncertainty remain outside the verified scope.
+Current files use professional project language. Earlier Git commits were preserved with their original messages; history was not rewritten. No collaborators, experiments, or historical contributions were invented. Third-party libraries retain their licenses. A project code license requires the owner's attribution/ownership decision and would not license the dataset.
+
+The code is intended for portfolio publication with its stated data-access requirements and performance limitations. Current-market valuation, confirmed target/unit semantics, temporal/spatial generalization, and calibrated uncertainty remain outside the verified scope.
