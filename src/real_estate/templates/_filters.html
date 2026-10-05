@@ -1,0 +1,57 @@
+<form id="listing-filters" class="listing-filters" aria-label="Listing filters">
+  <div class="filter-heading">
+    <h2>Filter listings</h2>
+    <p>Explore the same residential sale scope across the map and data insights.</p>
+  </div>
+  <div class="filter-grid">
+    <div class="field">
+      <label for="filter-property-type">Property type</label>
+      <select id="filter-property-type" name="property_type">
+        <option value="">All property types</option>
+        <option value="Casa">Casa — House</option>
+        <option value="Departamento">Departamento — Apartment</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="filter-region">Region (l2)</label>
+      <select id="filter-region" name="l2"><option value="">All regions</option></select>
+    </div>
+    <div class="field">
+      <label for="filter-locality">Locality (l4)</label>
+      <select id="filter-locality" name="l4"><option value="">All localities</option></select>
+    </div>
+    <div class="field">
+      <label for="filter-search">Location search</label>
+      <input id="filter-search" name="q" type="search" maxlength="100" placeholder="Region or locality">
+    </div>
+    <div class="field">
+      <label for="filter-min-price">Minimum price (USD)</label>
+      <input id="filter-min-price" name="min_price" type="number" min="0" step="any" placeholder="No minimum">
+    </div>
+    <div class="field">
+      <label for="filter-max-price">Maximum price (USD)</label>
+      <input id="filter-max-price" name="max_price" type="number" min="0" step="any" placeholder="No maximum">
+    </div>
+    <div class="field">
+      <label for="filter-min-area">Minimum area (m²)</label>
+      <input id="filter-min-area" name="min_area" type="number" min="0" step="any" placeholder="No minimum">
+    </div>
+    <div class="field">
+      <label for="filter-max-area">Maximum area (m²)</label>
+      <input id="filter-max-area" name="max_area" type="number" min="0" step="any" placeholder="No maximum">
+    </div>
+    <div class="field">
+      <label for="filter-bedrooms">Bedrooms</label>
+      <input id="filter-bedrooms" name="bedrooms" type="number" min="0" max="100" step="1" placeholder="Any count">
+    </div>
+    <div class="field">
+      <label for="filter-bathrooms">Bathrooms</label>
+      <input id="filter-bathrooms" name="bathrooms" type="number" min="0" max="100" step="1" placeholder="Any count">
+    </div>
+  </div>
+  <div class="filter-actions">
+    <button type="submit" class="primary-button">Apply filters <span aria-hidden="true">→</span></button>
+    <button type="reset" class="secondary-button">Reset filters</button>
+    <p id="filter-options-status" class="data-note" aria-live="polite"></p>
+  </div>
+</form>

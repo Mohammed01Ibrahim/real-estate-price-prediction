@@ -1,13 +1,7 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Peru residential price explorer</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  </head>
-  <body>
-    <main class="layout">
+{% extends "base.html" %}
+{% block title %}Estimate Price · Peru residential price explorer{% endblock %}
+{% block content %}
+    <div class="estimate-page">
       <header class="hero">
         <p class="eyebrow">REAL ESTATE · MACHINE LEARNING PORTFOLIO</p>
         <h1>Peru residential<br>price explorer</h1>
@@ -107,7 +101,5 @@
           </section>
         </aside>
       </section>
-      <footer>A local portfolio demonstration · See the repository README for methodology, evaluation, and data limitations.</footer>
-    </main>
-  </body>
-</html>
+    </div>
+{% endblock %}

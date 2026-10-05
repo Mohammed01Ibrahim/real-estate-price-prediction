@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Explore historical Peru residential asking prices through machine learning, an interactive listing map, and data insights.">
+    <title>{% block title %}Peru residential price explorer{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% block extra_head %}{% endblock %}
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand" href="{{ url_for('index') }}" aria-label="Peru residential price explorer home">
+          <span class="brand-mark" aria-hidden="true">⌂</span>
+          <span>Peru residential<span class="brand-caption">Price explorer</span></span>
+        </a>
+        <nav class="main-nav" aria-label="Main navigation">
+          <a href="{{ url_for('index') }}" {% if active_page|default('estimate') == 'estimate' %}class="active" aria-current="page"{% endif %}>Estimate Price</a>
+          <a href="{{ url_for('explore_page') }}" {% if active_page == 'explore' %}class="active" aria-current="page"{% endif %}>Explore Map</a>
+          <a href="{{ url_for('insights_page') }}" {% if active_page == 'insights' %}class="active" aria-current="page"{% endif %}>Data Insights</a>
+        </nav>
+        <span class="header-context">Historical listings · USD</span>
+      </div>
+    </header>
+    <main class="layout" id="main-content">
+      {% block content %}{% endblock %}
+      <footer class="site-footer">
+        <span>Peru residential price explorer</span>
+        <span>Historical asking prices · See the repository README for methodology, evaluation, and data limitations.</span>
+      </footer>
+    </main>
+    {% block extra_scripts %}{% endblock %}
+  </body>
+</html>

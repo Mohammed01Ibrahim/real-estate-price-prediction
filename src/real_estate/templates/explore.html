@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Explore Map · Peru residential price explorer{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/leaflet.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/MarkerCluster.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/MarkerCluster.Default.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='explore.css') }}">
+{% endblock %}
+{% block content %}
+<header class="page-header">
+  <div>
+    <p class="eyebrow">GEOGRAPHIC EXPLORATION</p>
+    <h1>Explore residential listings</h1>
+    <p class="page-description">Find the places behind historical asking prices. Filter the listings, explore clusters, and select a property to see the details available.</p>
+  </div>
+  <div class="scope"><span>Peru</span><span>Casa &amp; Departamento</span><span>2019–2020 · USD</span></div>
+</header>
+
+<section class="filter-panel panel" aria-label="Map filters">
+  {% include "_filters.html" %}
+</section>
+
+<section class="map-summary" aria-label="Map summary">
+  <div class="map-summary-item"><span id="matched-count">—</span><p>Matching listings</p></div>
+  <div class="map-summary-item"><span id="mapped-count">—</span><p>With map coordinates</p></div>
+  <div class="map-summary-item"><span id="missing-count">—</span><p>Without map coordinates</p></div>
+  <p class="map-summary-note">Locations are approximate. Coordinates are rounded to two decimal places; nearby listings may share a point.</p>
+</section>
+
+<section class="map-workspace" aria-label="Interactive Peru listing map">
+  <div class="map-panel panel">
+    <div class="map-toolbar">
+      <div class="map-legend" aria-label="Property type legend">
+        <span><i class="legend-dot casa" aria-hidden="true"></i>Casa</span>
+        <span><i class="legend-dot departamento" aria-hidden="true"></i>Departamento</span>
+        <span class="cluster-legend">Numbered circles group nearby listings</span>
+      </div>
+      <div class="map-actions">
+        <button id="fit-results" class="secondary-button compact-button" type="button" disabled>Fit results</button>
+        <button id="peru-view" class="secondary-button compact-button" type="button">Peru view</button>
+      </div>
+    </div>
+    <div class="map-canvas-wrap">
+      <div id="listing-map" aria-label="Map of approximate listing locations in Peru"></div>
+      <div id="map-empty-state" class="map-state" hidden>
+        <strong id="map-empty-title">No map points to show</strong>
+        <p id="map-empty-description">Try a wider filter range.</p>
+      </div>
+    </div>
+    <div class="map-status-row">
+      <p id="map-status" class="status-message" role="status" aria-live="polite">Loading listings…</p>
+      <span class="map-privacy-label">Approximate locations</span>
+    </div>
+    <p id="basemap-status" class="basemap-status" role="status" hidden>Basemap unavailable. Listing locations can still be explored. An internet connection is required for map tiles.</p>
+  </div>
+
+  <aside class="listing-details panel" aria-label="Selected listing details" aria-live="polite">
+    <p class="eyebrow">SELECTED LISTING</p>
+    <div id="details-empty" class="details-empty">
+      <div class="details-illustration" aria-hidden="true">⌖</div>
+      <h2>A closer look</h2>
+      <p>Hover over a point for a quick preview. Select a point to explore its available property details.</p>
+      <p>Click a cluster to zoom in. Where several listings share a location, click the cluster again to separate its points.</p>
+    </div>
+    <div id="details-content" hidden>
+      <p id="detail-type" class="property-type-label"></p>
+      <h2 id="detail-price" class="detail-price"></h2>
+      <p id="detail-location" class="detail-location"></p>
+      <dl id="detail-fields" class="detail-fields"></dl>
+      <p class="detail-location-note">Approximate coordinates rounded to two decimal places. This map does not identify an exact property address.</p>
+    </div>
+    <div class="details-scope">
+      <h3>Reading the map</h3>
+      <p>These are historical residential sale asking prices in USD, rather than completed transaction values. Missing bedrooms or bathrooms remain unknown.</p>
+    </div>
+  </aside>
+</section>
+<p class="data-note map-bottom-note">Map tiles are provided by OpenStreetMap and require an internet connection. Listing data is prepared locally from the same corrected scope used by the model. The map includes only records with valid coordinates.</p>
+<noscript><p class="error-message">JavaScript is required to load the interactive map and filters.</p></noscript>
+{% endblock %}
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='vendor/leaflet.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/leaflet.markercluster.js') }}"></script>
+<script src="{{ url_for('static', filename='filters.js') }}"></script>
+<script src="{{ url_for('static', filename='explore.js') }}"></script>
+{% endblock %}

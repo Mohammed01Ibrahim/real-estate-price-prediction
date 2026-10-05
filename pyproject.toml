@@ -16,7 +16,7 @@ dependencies = [
 where = ["src"]
 
 [tool.setuptools.package-data]
-real_estate = ["templates/*.html", "static/*.css"]
+real_estate = ["templates/*.html", "static/*.css", "static/*.js", "static/vendor/*", "static/vendor/images/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
