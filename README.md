@@ -160,7 +160,7 @@ Invoke-RestMethod -Uri http://127.0.0.1:5000/api/predict -Method Post -ContentTy
 
 The screenshot is from the actual local application and an invented property, not a real listing. A live HTTP smoke test made three valid prediction requests and five invalid requests; HTML, CSS, and health endpoints returned 200. Synthetic tests additionally verify missing/corrupt/unfitted models, serialization, unseen categories, nullable inputs, geographic math, train/fold isolation, target filtering, group separation, input escaping, malformed JSON, body limits, and safe errors.
 
-**112 automated tests passed.** The environment was initially created empty, installed from the declared dependencies, and revalidated after exact pins were recorded. Full real-data training and model loading ran successfully. Compilation and `pip check` passed. See [verification and publication review](docs/verification.md). The CI matrix is configured for Windows/Linux and Python 3.12/3.14, using synthetic fixtures; remote CI has not been run because nothing was pushed.
+**112 automated tests passed in both the working project and a clean public export.** The export installed the final exact dependencies in a separate empty environment without the private data/model, imported its own source, and passed all tests plus the missing-model health check. Full real-data training and model loading ran successfully in the working project. Compilation and `pip check` passed. See [verification and publication review](docs/verification.md). The CI matrix is configured for Windows/Linux and Python 3.12/3.14, using synthetic fixtures; remote CI has not been run because nothing was pushed.
 
 ## Data, artifacts, and publication
 

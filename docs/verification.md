@@ -5,8 +5,9 @@ Performed locally on Windows, Python 3.14.7, 2026-10-05. Nothing was pushed or p
 | Check | Evidence / outcome |
 |---|---|
 | Environment | Created a new empty `.venv`; installed the declared requirements; recorded exact direct/transitive runtime/test pins; reinstalled to validate direct pins. `pip check` passed. |
+| Clean public export | Exported only committed files to a disposable directory; created a separate empty environment; installed the final exact requirements; verified imports resolved to the exported source. `pip check` and **112 tests** passed (6.89 seconds). Missing private artifact correctly returned health HTTP 503. No raw data, original archive, or model was in this export. |
 | Core checks | `python -m compileall -q src scripts` and `git diff --check` passed. |
-| Automated behavior tests | `python -m pytest`: **112 passed**, final recorded run 2.84 seconds. Synthetic fixtures need neither raw dataset nor pretrained model. |
+| Automated behavior tests | `python -m pytest`: **112 passed**, working repository run 2.84 seconds and separate clean-export run 6.89 seconds. Synthetic fixtures need neither raw dataset nor pretrained model. |
 | Full real-data training | All four candidates completed three training-only CV folds and validation scoring on the final supported scope. Selected Random Forest was refitted on development data, serialized, reloaded, and evaluated on 2,195 test rows. |
 | Artifact | Compressed complete pipeline: 4,887,387 bytes. Serialization/inference equality tested. Missing, corrupt, unfitted, and schema/library-incompatible artifacts fail safely. |
 | Final consistency | After the repeated-ID guard was added, final partitions and stored model metrics were recomputed and matched the recorded results without refitting. Supplied source IDs are unique. |
