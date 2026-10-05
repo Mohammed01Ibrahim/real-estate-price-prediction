@@ -1,0 +1,2 @@
+# Keep pinned third-party downloads byte-identical to their recorded hashes.
+src/real_estate/static/vendor/** -text -whitespace
