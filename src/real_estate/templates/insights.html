@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% set active_page = 'insights' %}
+{% block title %}Data Insights · Peru residential price explorer{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='insights.css') }}">
+{% endblock %}
+{% block content %}
+<header class="page-header">
+  <div>
+    <p class="page-kicker">HISTORICAL LISTINGS · ANALYTICAL EXPLORER</p>
+    <h1>Data Insights</h1>
+    <p class="page-description">Explore the shape of the retained residential sale listings, then inspect the model's independent held-out results.</p>
+  </div>
+  <div class="scope"><span>Peru · 2019–2020</span><span>USD asking prices</span><span>Casa &amp; Departamento</span></div>
+</header>
+
+<nav class="insights-jump" aria-label="Data Insights sections">
+  <a href="#dataset-overview">Overview</a><a href="#distributions">Distributions</a><a href="#property-regions">Types &amp; regions</a><a href="#relationships">Relationships</a><a href="#model-assessment">Model evaluation</a><a href="#model-interpretation">Interpretation</a>
+</nav>
+
+<section class="panel filter-panel" aria-label="Filter exploratory charts">
+  <div class="section-heading">
+    <h2>Explore a slice of the listings</h2>
+    <p>Filters update the summary and exploratory charts. Model evaluation always uses the fixed final test set.</p>
+  </div>
+  {% include "_filters.html" %}
+</section>
+
+<p id="insights-status" class="status-message" role="status" aria-live="polite">Loading the prepared analytics…</p>
+<noscript><p class="error-message">JavaScript is required for the interactive charts and filters.</p></noscript>
+
+<section id="dataset-overview" class="insights-section" aria-labelledby="overview-title">
+  <div class="section-heading"><p class="insights-step">01 / THE DATASET</p><h2 id="overview-title">A snapshot of the selected listings</h2><p id="overview-scope">Summary values are calculated from the same corrected scope as the model.</p></div>
+  <div class="summary-grid insights-summary">
+    <article class="summary-card"><p>Retained listings</p><strong id="summary-listings">—</strong><span>Current filter selection</span></article>
+    <article class="summary-card"><p>Regions</p><strong id="summary-regions">—</strong><span>Distinct reported regions</span></article>
+    <article class="summary-card"><p>Median asking price</p><strong id="summary-price">—</strong><span>US dollars · advertised price</span></article>
+    <article class="summary-card"><p>Median total area</p><strong id="summary-area">—</strong><span>Reported surface_total · m²</span></article>
+    <article class="summary-card"><p>Casa</p><strong id="summary-casa">—</strong><span>House listings</span></article>
+    <article class="summary-card"><p>Departamento</p><strong id="summary-departamento">—</strong><span>Apartment listings</span></article>
+  </div>
+  <p class="data-note">This scope contains residential sale listings priced in USD with a blank payment period, assumed to represent a one-time asking price. Asking prices are not completed sale values. Area units are treated as m²; their original source definition is not confirmed.</p>
+  <div id="insights-empty" class="empty-state" hidden><h3>No matching listings</h3><p>Broaden the filters or reset them to return to the full retained scope. The model diagnostics below remain independent of these filters.</p></div>
+</section>
+
+<div id="exploratory-charts" aria-busy="true">
+  <section id="distributions" class="insights-section" aria-labelledby="distributions-title">
+    <div class="section-heading"><p class="insights-step">02 / DISTRIBUTIONS</p><h2 id="distributions-title">Understand the scale and the tail</h2><p>Both distributions include every matching retained observation. Extreme values are kept.</p></div>
+    <div class="insights-chart-grid">
+      <article class="panel insights-chart-card">
+        <div class="insights-chart-heading"><div><h3>Asking price distribution</h3><p>All matching USD asking prices</p></div><div class="insights-chart-control"><label for="price-scale">Price view</label><select id="price-scale"><option value="linear">Linear bins</option><option value="log">Log-spaced bins</option></select></div></div>
+        <div id="chart-price" class="insights-plot" role="img" aria-label="Histogram of USD asking prices"></div>
+        <p class="insights-chart-note">Switch to log-spaced bins to inspect the dense lower-price range while retaining the full heavy tail. Hover shows each bin's range and count.</p>
+      </article>
+      <article class="panel insights-chart-card">
+        <div class="insights-chart-heading"><div><h3>Total area distribution</h3><p>Reported surface_total in m²</p></div></div>
+        <div id="chart-area" class="insights-plot" role="img" aria-label="Histogram of reported total area in square metres"></div>
+        <p class="insights-chart-note">Missing or nonpositive total areas were excluded during corrected preparation. Large retained areas remain visible.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="property-regions" class="insights-section" aria-labelledby="regions-title">
+    <div class="section-heading"><p class="insights-step">03 / PROPERTY TYPES &amp; REGIONS</p><h2 id="regions-title">Who and where the listings represent</h2><p>Listing counts describe this dataset's coverage, rather than the size of a regional housing market.</p></div>
+    <div class="insights-chart-grid">
+      <article class="panel insights-chart-card">
+        <div class="insights-chart-heading"><div><h3>Property type distribution</h3><p>Supported residential categories only</p></div></div>
+        <div id="chart-types" class="insights-plot insights-plot-short" role="img" aria-label="Listing count for houses and apartments"></div>
+      </article>
+      <aside class="panel insights-reading-card"><span class="insights-reading-mark" aria-hidden="true">↗</span><h3>Read regional prices with their counts</h3><p>Median asking price limits the influence of a few extreme prices, but a median from a small regional sample can still be unstable.</p><p>Differences can reflect the mix of property types, sizes, locations, and listings captured. They are descriptive comparisons, not adjusted effects or evidence of causation.</p><p class="data-note">Region is the dataset's administrative field <code>l2</code>. Locality filters use <code>l4</code>. Unreported regions are shown separately where present.</p></aside>
+      <article class="panel insights-chart-card">
+        <div class="insights-chart-heading"><div><h3>Listing count by region</h3><p>Ranked by the number of matching listings</p></div></div>
+        <div id="chart-regions" class="insights-plot insights-plot-regions" role="img" aria-label="Ranked count of listings by region"></div>
+      </article>
+      <article class="panel insights-chart-card">
+        <div class="insights-chart-heading"><div><h3>Median asking price by region</h3><p>USD · hover includes the regional listing count</p></div></div>
+        <div id="chart-region-prices" class="insights-plot insights-plot-regions" role="img" aria-label="Regional median USD asking prices"></div>
+      </article>
+    </div>
+  </section>
+
+  <section id="relationships" class="insights-section" aria-labelledby="relationships-title">
+    <div class="section-heading"><p class="insights-step">04 / RELATIONSHIPS</p><h2 id="relationships-title">Inspect patterns without assuming causes</h2><p>These views describe observed associations. Correlation does not imply causation.</p></div>
+    <div class="insights-chart-grid">
+      <article class="panel insights-chart-card">
+        <div class="insights-chart-heading"><div><h3>Asking price vs total area</h3><p id="scatter-source">Loading listing coverage…</p></div><div class="insights-chart-control"><label for="scatter-scale">Axes</label><select id="scatter-scale"><option value="linear">Linear</option><option value="log">Logarithmic</option></select></div></div>
+        <div id="chart-scatter" class="insights-plot" role="img" aria-label="Scatter plot of asking price versus total area, coloured by property type"></div>
+        <p class="insights-chart-note">Hover for property type, price, area, region, and locality. A deterministic sample is used when needed; extrema are retained. Summary statistics and histograms use all matching listings.</p>
+      </article>
+      <article class="panel insights-chart-card">
+        <div class="insights-chart-heading"><div><h3>Numeric correlation</h3><p>Pearson correlation · pairwise available observations</p></div></div>
+        <div id="chart-correlation" class="insights-plot" role="img" aria-label="Correlation matrix of the current valid numeric fields"></div>
+        <p class="insights-chart-note">Raw USD price is used here. Hover shows the correlation and the number of paired observations. Undefined correlations remain blank; missing values are not converted to zero. Coordinates represent location, rather than categorical codes.</p>
+      </article>
+    </div>
+  </section>
+</div>
+
+<section id="model-assessment" class="insights-section insights-model-section" aria-labelledby="model-title">
+  <div class="section-heading"><p class="insights-step">05 / MODEL EVALUATION</p><h2 id="model-title">The fixed final held-out test</h2><p>These diagnostics use saved predictions from the final corrected model. Exploration filters above do not change this evaluation.</p></div>
+  <div class="insights-global-note"><strong>Independent model diagnostics</strong><span>Fixed test set · original USD prices · never filtered by this dashboard</span></div>
+  <p id="evaluation-status" class="status-message" role="status" aria-live="polite">Loading verified model results…</p>
+  <div id="evaluation-content" hidden>
+    <div class="summary-grid insights-model-summary">
+      <article class="summary-card"><p>Held-out MAE</p><strong id="evaluation-mae">—</strong><span>Mean absolute error · USD</span></article>
+      <article class="summary-card"><p>Held-out RMSE</p><strong id="evaluation-rmse">—</strong><span>Penalises large errors · USD</span></article>
+      <article class="summary-card"><p>Held-out R²</p><strong id="evaluation-r2">—</strong><span>Coefficient of determination</span></article>
+    </div>
+    <p id="evaluation-context" class="insights-evaluation-context"></p>
+    <div class="insights-chart-grid">
+      <article class="panel insights-chart-card">
+        <div class="insights-chart-heading"><div><h3>Predicted vs actual asking price</h3><p id="prediction-source">Final model · held-out test</p></div><div class="insights-chart-control"><label for="prediction-scale">Axes</label><select id="prediction-scale"><option value="linear">Linear</option><option value="log">Logarithmic</option></select></div></div>
+        <div id="chart-predictions" class="insights-plot" role="img" aria-label="Final held-out predicted versus actual USD asking price with a perfect prediction line"></div>
+        <p class="insights-chart-note">The diagonal represents a perfect prediction. Points below it are underestimates; points above it are overestimates. All test predictions are included.</p>
+      </article>
+      <article class="panel insights-chart-card">
+        <div class="insights-chart-heading"><div><h3>Residuals vs predicted price</h3><p>Residual = actual − predicted · USD</p></div></div>
+        <div id="chart-residuals" class="insights-plot" role="img" aria-label="Final held-out residuals versus predicted USD asking price"></div>
+        <p class="insights-chart-note">Positive residuals indicate underestimation. Negative residuals indicate overestimation. The zero line represents an exact prediction.</p>
+      </article>
+      <article class="panel insights-chart-card insights-chart-wide">
+        <div class="insights-chart-heading"><div><h3>Residual distribution</h3><p>Every final held-out test residual · full range</p></div></div>
+        <div id="chart-residual-distribution" class="insights-plot insights-plot-short" role="img" aria-label="Histogram of final held-out USD residuals"></div>
+        <p class="insights-chart-note">A long positive tail means some high asking prices were underestimated substantially. Histogram bins are a display aggregation of the saved test residuals.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="model-interpretation" class="insights-section" aria-labelledby="interpretation-title">
+  <div class="section-heading"><p class="insights-step">06 / MODEL INTERPRETATION</p><h2 id="interpretation-title">Which inputs the selected pipeline relied on</h2><p>These are the saved permutation scores from the original validation split used for model selection. They are not permutation scores recomputed on the final test set.</p></div>
+  <p id="importance-status" class="status-message" role="status">Loading validation permutation scores…</p>
+  <article id="importance-content" class="panel insights-chart-card" hidden>
+    <div class="insights-chart-heading"><div><h3>Validation permutation importance</h3><p>Mean increase in MAE after shuffling an input · USD</p></div></div>
+    <div id="chart-importance" class="insights-plot" role="img" aria-label="Validation permutation importance in increase of USD mean absolute error with standard deviation error bars"></div>
+    <p class="insights-chart-note">A larger positive increase means prediction error grew when that input was shuffled. Error bars show the standard deviation across repeats. Near-zero or negative scores offer little evidence of reliable importance on this split.</p>
+    <p class="data-note">Permutation importance describes a fitted pipeline's predictive reliance. Correlated inputs may share importance, and shuffling can create unrealistic combinations. Scores depend on the sample and error metric; they do not identify causal drivers or effects on a property's value.</p>
+  </article>
+</section>
+
+<section class="insights-closing"><h2>Use this dashboard in context</h2><p>These are historical asking-price observations and an imperfect portfolio model. Dataset coverage, unconfirmed source semantics, missing details, and extreme prices limit interpretation. The dashboard does not establish present-day market values or uncertainty intervals.</p><a href="/explore">Explore the geographic distribution <span aria-hidden="true">→</span></a></section>
+{% endblock %}
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='vendor/plotly.min.js') }}" defer></script>
+<script src="{{ url_for('static', filename='filters.js') }}" defer></script>
+<script src="{{ url_for('static', filename='insights.js') }}" defer></script>
+{% endblock %}
