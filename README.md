@@ -111,6 +111,7 @@ real-estate-price-prediction/
 ├── artifacts/README.md       # ignored local generated experiment output
 ├── docs/                    # methodology, review report, baseline, public results
 ├── .github/workflows/tests.yml
+├── run_app.py                # VS Code launcher for the existing app entry point
 ├── pyproject.toml
 ├── requirements.txt
 ├── constraints.txt
@@ -151,12 +152,18 @@ python -m real_estate.prepare_explorer
 # python -m real_estate.train --data "C:\path\to\your.csv" --model models/pipeline.joblib
 ```
 
-Run the data-independent tests and start the app:
+Run the data-independent tests:
 
 ```powershell
 python -m pytest
-python -m real_estate.web
 ```
+
+After setup, start the application using either option:
+
+1. **VS Code:** select `.venv\Scripts\python.exe` as the Python interpreter, open the root [run_app.py](run_app.py) file, and click **Run Python File** in the editor. The server runs in VS Code's integrated terminal.
+2. **Terminal:** run `python -m real_estate.web` with the virtual environment active, or use `.\.venv\Scripts\python.exe -m real_estate.web` without activation.
+
+`run_app.py` delegates to the same existing application entry point and requires the editable package installation from `requirements.txt`.
 
 Open [the local application](http://127.0.0.1:5000). The server binds to localhost with debug and the reloader disabled. Stop it with Ctrl+C. If port 5000 is occupied, use `python -m flask --app real_estate.web:create_app run --host 127.0.0.1 --port 5001 --no-debugger --no-reload`.
 
