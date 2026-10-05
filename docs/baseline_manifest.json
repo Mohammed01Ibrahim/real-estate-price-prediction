@@ -1,0 +1,103 @@
+{
+  "phase": "Phase 2 baseline; originals remain outside the new repository",
+  "archives": [
+    {
+      "filename": "DS-PRO Code.zip",
+      "sha256": "cb4d2a7f9bad9c4a97d436562f97a8e139d301b706eef0477f2de9e60d8ec30f",
+      "members": [
+        {
+          "path": "DS PRO/",
+          "bytes": 0
+        },
+        {
+          "path": "DS PRO/Code.ipynb",
+          "bytes": 4638689
+        },
+        {
+          "path": "DS PRO/pe_properties_crude.csv",
+          "bytes": 92466281
+        }
+      ]
+    },
+    {
+      "filename": "Data Science Project-Real state projects.zip",
+      "sha256": "06bdd50ed9ea16d34c14665fae1b16033b648fcb86af2399f4749b9f4fdcce01",
+      "members": [
+        {
+          "path": ".vs/",
+          "bytes": 0
+        },
+        {
+          "path": ".vs/Data Science Project/",
+          "bytes": 0
+        },
+        {
+          "path": ".vs/Data Science Project/v17/",
+          "bytes": 0
+        },
+        {
+          "path": ".vs/Data Science Project/v17/.wsuo",
+          "bytes": 14336
+        },
+        {
+          "path": ".vs/slnx.sqlite",
+          "bytes": 90112
+        },
+        {
+          "path": ".vs/VSWorkspaceState.json",
+          "bytes": 78
+        },
+        {
+          "path": "app.py",
+          "bytes": 4310
+        },
+        {
+          "path": "CleanedSet.csv",
+          "bytes": 25784486
+        },
+        {
+          "path": "CleanedSet_new.csv",
+          "bytes": 25784486
+        },
+        {
+          "path": "Documentation.md",
+          "bytes": 6034
+        },
+        {
+          "path": "New.ipynb",
+          "bytes": 149916
+        },
+        {
+          "path": "pe_properties_crude.csv",
+          "bytes": 92466281
+        },
+        {
+          "path": "processed_real_estate_data.csv",
+          "bytes": 69104579
+        },
+        {
+          "path": "processed_real_estate_data.hyper",
+          "bytes": 16646144
+        },
+        {
+          "path": "random_forest_real_estate_model.pkl",
+          "bytes": 330836593
+        },
+        {
+          "path": "visual.twb",
+          "bytes": 297956
+        },
+        {
+          "path": "wared.ipynb",
+          "bytes": 531347
+        }
+      ]
+    }
+  ],
+  "raw_dataset_sha256": "43c0cdaa2212161a2e9b114e9c2970afe106f2157a025944f0b5b5ec7ff62884",
+  "confirmed_duplicates": [
+    "Raw CSV bytes identical across both archives",
+    "CleanedSet.csv and CleanedSet_new.csv bytes identical"
+  ],
+  "legacy_policy": "Original notebooks, processed data, Tableau outputs, and 330836593-byte model preserved in original ZIPs; not loaded or copied into final repository."
+}
